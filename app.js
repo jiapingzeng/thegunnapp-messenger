@@ -2,7 +2,7 @@ var express = require('express')
 var config = require('config')
 var bodyParser = require('body-parser')
 var request = require('request')
-var moment = require('moment')
+var moment = require('moment-timezone')
 
 var app = express()
 var port = process.env.PORT || 3000
@@ -59,10 +59,10 @@ var receivedPayload = (event) => {
     var payload = event.postback.payload
     switch(payload) {
         case 'SCHEDULE_TODAY':
-            sendTextMessage(senderId, getSchedule(moment().format()))
+            sendTextMessage(senderId, getSchedule(moment().tz("America/Los_Angeles").format()))
             break
         case 'SCHEDULE_TOMORROW':
-            sendTextMessage(senderId, getSchedule(moment().add(1, 'days').format()))
+            sendTextMessage(senderId, getSchedule(moment().tz("America/Los_Angeles").add(1, 'days').format()))
             break
     }
 }
@@ -70,11 +70,12 @@ var receivedPayload = (event) => {
 var getSchedule = (time) => {
     var regular = true
     var day = moment(time).format('dddd')
+    console.log('showing schedule for ' + day)
     if (regular) {
         switch(day) {
             case 'Saturday':
             case 'Sunday':
-                return 'There\'s no school, silly'
+                return 'There\'s no school, silly!'
                 break
             default:
                 return 'It\'s a regular schedule day!'
