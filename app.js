@@ -55,7 +55,7 @@ var receivedMessage = (event) => {
 }
 
 var receivedPayload = (event) => {
-    var senderId = event.sender.Id
+    var senderId = event.sender.id
     var payload = event.postback.payload
     switch(payload) {
         case 'SCHEDULE_TODAY':
@@ -108,6 +108,7 @@ var sendGenericMessage = (recipientId) => {
             }
         }
     }
+    console.log(messageData)
     callSendAPI(messageData)
 }
 
@@ -116,6 +117,7 @@ var sendTextMessage = (recipientId, messageText) => {
         recipient: { id: recipientId },
         message: { text: messageText }
     }
+    console.log(messageData)
     callSendAPI(messageData)
 }
 
