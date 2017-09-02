@@ -12,7 +12,7 @@ app.use(bodyParser.json())
 var appSecret = process.env.MESSENGER_APP_SECRET ? process.env.MESSENGER_APP_SECRET : config.get('appSecret')
 var validationToken = process.env.MESSENGER_VALIDATION_TOKEN ? (process.env.MESSENGER_VALIDATION_TOKEN) : config.get('validationToken')
 var pageAccessToken = process.env.MESSENGER_PAGE_ACCESS_TOKEN ? (process.env.MESSENGER_PAGE_ACCESS_TOKEN) : config.get('pageAccessToken')
-var serverUrl = process.env.MESSENGER_SERVER_URL ? process.env.MESSENGER_SERVER_URL : config.get('serverUrl')
+var apiUrl = process.env.MESSENGER_API_URL ? process.env.MESSENGER_API_URL : config.get('apiUrl')
 
 app.get('/webhook', (req, res) => {
     if (req.query['hub.mode'] === 'subscribe' && req.query['hub.verify_token'] === validationToken) {
