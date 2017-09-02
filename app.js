@@ -96,11 +96,11 @@ var sendGenericMessage = (recipientId) => {
                     buttons: [
                         {
                             type: 'postback',
-                            title: 'View today\'s schedule',
+                            title: 'Today\'s schedule',
                             payload: 'SCHEDULE_TODAY'
                         }, {
                             type: 'postback',
-                            title: 'View tomorrow\'s schedule',
+                            title: 'Tomorrow\'s schedule',
                             payload: 'SCHEDULE_TOMORROW'
                         }
                     ]
