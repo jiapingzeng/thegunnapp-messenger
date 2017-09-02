@@ -108,8 +108,7 @@ var sendGenericMessage = (recipientId) => {
             }
         }
     }
-    console.log(messageData)
-    //callSendAPI(messageData)
+    callSendAPI(messageData)
 }
 
 var sendTextMessage = (recipientId, messageText) => {
@@ -117,8 +116,7 @@ var sendTextMessage = (recipientId, messageText) => {
         recipient: { id: recipientId },
         message: { text: messageText }
     }
-    console.log(messageData)
-    //callSendAPI(messageData)
+    callSendAPI(messageData)
 }
 
 var callSendAPI = (messageData) => {
