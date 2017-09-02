@@ -70,7 +70,6 @@ var receivedPayload = (event) => {
 var getSchedule = (time) => {
     var regular = true
     var day = moment(time).tz("America/Los_Angeles").format('dddd')
-    console.log('showing schedule for ' + day)
     if (regular) {
         switch(day) {
             case 'Saturday':
@@ -78,7 +77,7 @@ var getSchedule = (time) => {
                 return 'There\'s no school, silly!'
                 break
             default:
-                return 'It\'s a regular schedule day!'
+                return 'It\'s a regular schedule ' + day + '!'
         }
     }    
 }
