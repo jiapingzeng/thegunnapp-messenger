@@ -59,17 +59,17 @@ var receivedPayload = (event) => {
     var payload = event.postback.payload
     switch(payload) {
         case 'SCHEDULE_TODAY':
-            sendTextMessage(senderId, getSchedule(moment().tz("America/Los_Angeles").format()))
+            sendTextMessage(senderId, getSchedule(moment().format()))
             break
         case 'SCHEDULE_TOMORROW':
-            sendTextMessage(senderId, getSchedule(moment().tz("America/Los_Angeles").add(1, 'days').format()))
+            sendTextMessage(senderId, getSchedule(moment().add(1, 'days').format()))
             break
     }
 }
 
 var getSchedule = (time) => {
     var regular = true
-    var day = moment(time).format('dddd')
+    var day = moment(time).tz("America/Los_Angeles").format('dddd')
     console.log('showing schedule for ' + day)
     if (regular) {
         switch(day) {
