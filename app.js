@@ -59,10 +59,10 @@ var receivedPayload = (event) => {
     var payload = event.postback.payload
     switch(payload) {
         case 'SCHEDULE_TODAY':
-            sendTextMessage(senderId, getSchedule(moment.format()))
+            sendTextMessage(senderId, getSchedule(moment().format()))
             break
         case 'SCHEDULE_TOMORROW':
-            sendTextMessage(senderId, getSchedule(moment.add(1, 'days').format()))
+            sendTextMessage(senderId, getSchedule(moment().add(1, 'days').format()))
             break
     }
 }
