@@ -55,15 +55,15 @@ var receivedMessage = (event) => {
         var match = messageText.toLowerCase()
         // this is terrible but im too dum to fix
         if (match.includes('monday')) {
-            getRegularSchedule('Monday')
+            sendTextMessage(senderId, getRegularSchedule('Monday'))
         } else if (match.includes('tuesday')) {
-            getRegularSchedule('Tuesday')
+            sendTextMessage(senderId, getRegularSchedule('Tuesday'))
         } else if (match.includes('wednesday')) {
-            getRegularSchedule('Wednesday')
+            sendTextMessage(senderId, getRegularSchedule('Wednesday'))
         } else if (match.includes('thursday')) {
-            getRegularSchedule('Thursday')
+            sendTextMessage(senderId, getRegularSchedule('Thursday'))
         } else if (match.includes('friday')) {
-            getRegularSchedule('Friday')
+            sendTextMessage(senderId, getRegularSchedule('Friday'))
         } else {
             sendGenericMessage(senderId)
         }
