@@ -13,7 +13,10 @@ app.use(bodyParser.json())
 var appSecret = process.env.MESSENGER_APP_SECRET ? process.env.MESSENGER_APP_SECRET : config.get('appSecret')
 var validationToken = process.env.MESSENGER_VALIDATION_TOKEN ? (process.env.MESSENGER_VALIDATION_TOKEN) : config.get('validationToken')
 var pageAccessToken = process.env.MESSENGER_PAGE_ACCESS_TOKEN ? (process.env.MESSENGER_PAGE_ACCESS_TOKEN) : config.get('pageAccessToken')
-var apiUrl = process.env.MESSENGER_API_URL ? process.env.MESSENGER_API_URL : config.get('apiUrl')
+var messengerUrl = process.env.MESSENGER_API_URL ? process.env.MESSENGER_API_URL : config.get('messengerUrl')
+var googleApiKey = process.env.GOOGLE_API_KEY ? process.env.GOOGLE_API_KEY : config.get('googleApiKey')
+var calendarId = process.env.GOOGLE_CALENDAR_ID ? process.env.GOOGLE_CALENDAR_ID : config.get('calendarId')
+var calendarUrl = process.env.GOOGLE_CALENDAR_API_URL ? process.env.GOOGLE_CALENDAR_API_URL : config.get('calendarUrl')
 
 app.get('/webhook', (req, res) => {
     if (req.query['hub.mode'] === 'subscribe' && req.query['hub.verify_token'] === validationToken) {
@@ -47,9 +50,20 @@ var receivedMessage = (event) => {
     var messageText = message.text
     if(messageText) {
         console.log('received message "' + messageText + '" from ' + senderId)
-        switch(messageText) {
-            default:
-                sendGenericMessage(senderId)
+        var match = messageText.toLowerCase()
+        // this is terrible but im too dum to fix
+        if (match.includes('monday')) {
+            getRegularSchedule('Monday')
+        } else if (match.includes('tuesday')) {
+            getRegularSchedule('Tuesday')
+        } else if (match.includes('wednesday')) {
+            getRegularSchedule('Wednesday')
+        } else if (match.includes('thursday')) {
+            getRegularSchedule('Thursday')
+        } else if (match.includes('friday')) {
+            getRegularSchedule('Friday')
+        } else {
+            sendGenericMessage(senderId)
         }
     }
 }
@@ -68,18 +82,24 @@ var receivedPayload = (event) => {
 }
 
 var getSchedule = (time) => {
-    var regular = true
-    var day = moment(time).tz("America/Los_Angeles").format('dddd')
-    if (regular) {
+    var alternateSchedule = callCalendarApi(moment(time).format())
+    if (alternateSchedule) {
+        return alternateSchedule
+    } else {
+        var day = moment(time).tz('America/Los_Angeles').format('dddd')
         switch(day) {
             case 'Saturday':
             case 'Sunday':
                 return 'There\'s no school, silly!'
                 break
             default:
-                return 'It\'s a regular schedule ' + day + '!'
+                return getRegularSchedule(day)
         }
     }    
+}
+
+var getRegularSchedule = (day) => {
+    return 'It\'s a regular schedule ' + day + '! The schedule looks like: \n' + regularSchedule[day]
 }
 
 var sendGenericMessage = (recipientId) => {
@@ -92,7 +112,7 @@ var sendGenericMessage = (recipientId) => {
                 type: 'template',
                 payload: {
                     template_type: 'button',
-                    text: 'What would you like to do?',
+                    text: 'What would you like to see?',
                     buttons: [
                         {
                             type: 'postback',
@@ -109,7 +129,7 @@ var sendGenericMessage = (recipientId) => {
         }
     }
     console.log(messageData)
-    callSendAPI(messageData)
+    callSendApi(messageData)
 }
 
 var sendTextMessage = (recipientId, messageText) => {
@@ -118,12 +138,12 @@ var sendTextMessage = (recipientId, messageText) => {
         message: { text: messageText }
     }
     console.log(messageData)
-    callSendAPI(messageData)
+    callSendApi(messageData)
 }
 
-var callSendAPI = (messageData) => {
+var callSendApi = (messageData) => {
     request({
-        uri: apiUrl,
+        uri: messengerUrl,
         qs: { access_token: pageAccessToken },
         method: 'POST',
         json: messageData
@@ -131,6 +151,30 @@ var callSendAPI = (messageData) => {
         if (!err && res.statusCode == 200) {
             var recipientId = body.recipient_id
             var messageId = body.message_id
+        }
+    })
+}
+
+var callCalendarApi = (time) => {
+    request({
+        uri: calendarUrl.replace('calendarId', calendarId),
+        qs: {
+            key: googleApiKey,
+            singleEvents: true,
+            timeMin: moment(time).tz('America/Los_Angeles').startOf('day').format(),
+            timeMax: moment(time).tz('America/Los_Angeles').add(1, 'day').startOf('day').format()
+        },
+        method: 'GET'
+    }, (err, res, data) => {
+        if (!err && res.statusCode == 200) {
+            data = JSON.parse(data.trim())
+            for (var i = 0; i < data.items.length; i++) {
+                var event = data.items[i]
+                if (event.summary && event.summary.toLowerCase().includes('schedule')) {
+                    return 'Seems like there is an alternate schedule! Here it is: \n' + event.description
+                }                                
+            }
+            return false
         }
     })
 }

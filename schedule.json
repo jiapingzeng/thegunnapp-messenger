@@ -1,0 +1,7 @@
+{
+    "Monday": "Period A (8:25-9:45)\nBrunch (9:45-10:00)\nPeriod B (10:00-11:15)\nPeriod C (11:25-12:40)\nLunch (12:40-1:20)\nPeriod G (1:20-2:35)\n\n",
+    "Tuesday": "Period D (8:25-9:45)\nBrunch (9:45-10:00)\nFlex/SEL (10:00-10:50)\nPeriod E (11:00-12:15)\nLunch (12:15-12:55)\nPeriod A (12:55-2:15)\nPeriod G (2:25-3:40)\n\n",
+    "Wednesday": "Period B (8:25-9:50)\nBrunch (9:50-10:05)\nPeriod C (10:05-11:25)\nPeriod D (11:35-12:55)\nLunch (12:55-1:35)\nPeriod F (1:35-2:55)\n\n",
+    "Thursday": "Period E (8:25-9:50)\nBrunch (9:50-10:05)\nFlex/SEL (10:05-10:55)\nPeriod B (11:05-12:15)\nLunch (12:15-12:55)\nPeriod A (12:55-2:05)\nPeriod G (2:15-3:35)\n\n",
+    "Friday": "Period C (8:25-9:40)\nBrunch (9:40-9:55)\nPeriod D (9:55-11:05)\nPeriod E (11:15-12:25)\nLunch (12:25-1:05)\nPeriod F (1:05-2:15)\nPeriod G (2:25-3:35)\n\n"
+}
