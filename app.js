@@ -18,6 +18,8 @@ var googleApiKey = process.env.GOOGLE_API_KEY ? process.env.GOOGLE_API_KEY : con
 var calendarId = process.env.GOOGLE_CALENDAR_ID ? process.env.GOOGLE_CALENDAR_ID : config.get('calendarId')
 var calendarUrl = process.env.GOOGLE_CALENDAR_API_URL ? process.env.GOOGLE_CALENDAR_API_URL : config.get('calendarUrl')
 
+var regularSchedule = require('./schedule')
+
 app.get('/webhook', (req, res) => {
     if (req.query['hub.mode'] === 'subscribe' && req.query['hub.verify_token'] === validationToken) {
         res.status(200).send(req.query['hub.challenge'])
