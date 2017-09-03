@@ -55,15 +55,15 @@ var receivedMessage = (event) => {
         var match = messageText.toLowerCase()
         // this is terrible but im too dum to fix
         if (match.includes('monday')) {
-            sendTextMessage(senderId, getRegularSchedule('Monday'))
+            sendTextMessage(senderId, 'A regular schedule Monday looks like: ' + getRegularSchedule('Monday'))
         } else if (match.includes('tuesday')) {
-            sendTextMessage(senderId, getRegularSchedule('Tuesday'))
+            sendTextMessage(senderId, 'A regular schedule Tuesday looks like: ' + getRegularSchedule('Tuesday'))
         } else if (match.includes('wednesday')) {
-            sendTextMessage(senderId, getRegularSchedule('Wednesday'))
+            sendTextMessage(senderId, 'A regular schedule Wednesday looks like: ' + getRegularSchedule('Wednesday'))
         } else if (match.includes('thursday')) {
-            sendTextMessage(senderId, getRegularSchedule('Thursday'))
+            sendTextMessage(senderId, 'A regular schedule Thursday looks like: ' + getRegularSchedule('Thursday'))
         } else if (match.includes('friday')) {
-            sendTextMessage(senderId, getRegularSchedule('Friday'))
+            sendTextMessage(senderId, 'A regular schedule Friday looks like: ' + getRegularSchedule('Friday'))
         } else {
             sendGenericMessage(senderId)
         }
@@ -95,13 +95,13 @@ var getSchedule = (time) => {
                 return 'There\'s no school, silly!'
                 break
             default:
-                return getRegularSchedule(day)
+                return 'It\'s a regular schedule ' + day + '! The schedule looks like: \n' + getRegularSchedule(day)
         }
     }    
 }
 
 var getRegularSchedule = (day) => {
-    return 'It\'s a regular schedule ' + day + '! The schedule looks like: \n' + regularSchedule[day]
+    return regularSchedule[day]
 }
 
 var sendGenericMessage = (recipientId) => {
