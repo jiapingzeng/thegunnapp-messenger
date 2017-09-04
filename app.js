@@ -172,7 +172,10 @@ var callCalendarApi = (time) => {
             data = JSON.parse(data.trim())
             for (var i = 0; i < data.items.length; i++) {
                 var event = data.items[i]
-                if (event.summary && event.summary.toLowerCase().includes('schedule')) {
+                var summary = event.summary.toLowerCase()
+                if (summary && (summary.includes('holiday') || summary.includes('no school'))) {
+                    return 'There\'s no school! Enjoy your day off!'
+                } else if (summary && summary.includes('schedule')) {
                     return 'Seems like there is an alternate schedule! Here it is: \n' + event.description
                 }                                
             }
