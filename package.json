@@ -1,7 +1,7 @@
 {
-  "name": "thegunnapp",
+  "name": "thegunnapp-bot",
   "private": true,
-  "version": "0.3.1",
+  "version": "0.4.6",
   "description": "Messenger bot for TheGunnApp",
   "main": "app.js",
   "author": {

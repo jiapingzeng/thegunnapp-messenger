@@ -50,7 +50,7 @@ var receivedMessage = (event) => {
     var senderId = event.sender.id
     var message = event.message
     var messageText = message.text
-    if(messageText) {
+    if (messageText) {
         console.log('received message "' + messageText + '" from ' + senderId)
         var match = messageText.toLowerCase()
         // this is terrible but im too dum to fix
@@ -73,31 +73,32 @@ var receivedMessage = (event) => {
 var receivedPayload = (event) => {
     var senderId = event.sender.id
     var payload = event.postback.payload
-    switch(payload) {
+    switch (payload) {
         case 'SCHEDULE_TODAY':
-            sendTextMessage(senderId, getSchedule(moment().format()))
+            getSchedule(senderId, moment().format())
             break
         case 'SCHEDULE_TOMORROW':
-            sendTextMessage(senderId, getSchedule(moment().add(1, 'days').format()))
+            getSchedule(senderId, moment().add(1, 'days').format())
             break
     }
 }
 
-var getSchedule = (time) => {
-    var alternateSchedule = callCalendarApi(moment(time).format())
-    if (alternateSchedule) {
-        return alternateSchedule
-    } else {
-        var day = moment(time).tz('America/Los_Angeles').format('dddd')
-        switch(day) {
-            case 'Saturday':
-            case 'Sunday':
-                return 'There\'s no school, silly!'
-                break
-            default:
-                return 'It\'s a regular schedule ' + day + '! The schedule looks like: \n' + getRegularSchedule(day)
+var getSchedule = (senderId, time) => {
+    callCalendarApi(moment(time).format(), (res) => {
+        if (res) {
+            sendTextMessage(senderId, res)
+        } else {
+            var day = moment(time).tz('America/Los_Angeles').format('dddd')
+            switch (day) {
+                case 'Saturday':
+                case 'Sunday':
+                    sendTextMessage(senderId, 'There\'s no school, silly!')
+                    break
+                default:
+                    sendTextMessage(senderId, 'It\'s a regular schedule ' + day + '! The schedule looks like: \n' + getRegularSchedule(day))
+            }
         }
-    }    
+    })
 }
 
 var getRegularSchedule = (day) => {
@@ -157,7 +158,7 @@ var callSendApi = (messageData) => {
     })
 }
 
-var callCalendarApi = (time) => {
+var callCalendarApi = (time, cb) => {
     request({
         uri: calendarUrl.replace('calendarId', calendarId),
         qs: {
@@ -173,13 +174,15 @@ var callCalendarApi = (time) => {
             for (var i = 0; i < data.items.length; i++) {
                 var event = data.items[i]
                 var summary = event.summary.toLowerCase()
-                if (summary && (summary.includes('holiday') || summary.includes('no school'))) {
-                    return 'There\'s no school! Enjoy your day off!'
-                } else if (summary && summary.includes('schedule')) {
-                    return 'Seems like there is an alternate schedule! Here it is: \n' + event.description
-                }                                
+                if (summary && summary.includes('schedule')) {
+                    cb && cb('Seems like there is an alternate schedule! Here it is: \n' + event.description)
+                } else if (summary && (summary.includes('holiday') ||
+                    summary.includes('break') ||
+                    summary.includes('no school') ||
+                    summary.includes('no students'))) {
+                    cb && cb('There\'s no school! Enjoy your day off!')
+                }
             }
-            return false
         }
     })
 }
