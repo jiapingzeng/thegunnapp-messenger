@@ -59,6 +59,7 @@ var receivedMessage = (event) => {
     var senderId = event.sender.id
     var message = event.message
     var messageText = message.text
+    var messageAttachments = message.attachments
     if (messageText) {
         console.log('received message "' + messageText + '" from ' + senderId)
         var match = messageText.toLowerCase()
@@ -82,6 +83,8 @@ var receivedMessage = (event) => {
             default:
                 sendGenericMessage(senderId)
         }
+    } else if (messageAttachments) {
+        sendGenericMessage(senderId, 'We can\'t tell what that is. Would you like to try one of these options?')
     }
 }
 
