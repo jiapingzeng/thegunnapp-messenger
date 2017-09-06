@@ -68,7 +68,7 @@ var receivedMessage = (event) => {
             case 'wednesday':
             case 'thursday':
             case 'frday':
-                sendTextMessage(senderId, 'A regular' + capFirstLetter(match) + 'schedule looks like: \n' + getRegularSchedule(match))
+                sendTextMessage(senderId, 'A regular ' + capFirstLetter(match) + ' schedule looks like: \n' + getRegularSchedule(match))
                 break
             case 'download':
                 sendDownloadLinks(senderId)
@@ -77,7 +77,7 @@ var receivedMessage = (event) => {
                 sendImage(senderId, appUrl + 'campusmap.jpg')
                 break
             case 'help':
-                sendTextMessage(senderId, 'Thanks for using TheGunnApp Messenger bot!\nTo view the regular bell schedule, simply enter a day (e.g. "Monday")\nUse "Download" to download TheGunnApp for iOS or Android\nTry "Map" to view the (under construction) campus map')
+                sendHelpText(senderId)
                 break
             default:
                 sendGenericMessage(senderId)
@@ -97,6 +97,9 @@ var receivedPayload = (event) => {
             break
         case 'DOWNLOAD':
             sendDownloadLinks(senderId)
+            break
+        case 'START':
+            sendHelpText(senderId)
             break
     }
 }
@@ -172,7 +175,7 @@ var sendDownloadLinks = (recipientId, text) => {
                 type: 'template',
                 payload: {
                     template_type: 'button',
-                    text: text ? text : 'Which one would you like to download?',
+                    text: text ? text : 'Which platform would you like to download the app for?',
                     buttons: [
                         {
                             type: 'web_url',
@@ -205,6 +208,15 @@ var sendImage = (recipientId, image) => {
     }
     console.log(messageData)
     callSendApi(messageData)
+}
+
+var sendHelpText = (recipientId) => {
+    var helpMessage = 'Thanks for using TheGunnApp Messenger bot!\n\n' +
+        'Text "Today" or "Tomorrow" to see the bell schedule for the day (shows alternate schedules too!)\n\n' +
+        'To view the regular bell schedule, simply enter a day (e.g. "Monday")\n\n' +
+        'Use "Download" to download TheGunnApp for iOS or Android\n\n' +
+        'Try "Map" to view the (under construction) campus map'
+    sendTextMessage(recipientId, helpMessage)
 }
 
 var callSendApi = (messageData) => {
