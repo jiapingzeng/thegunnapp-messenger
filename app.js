@@ -4,7 +4,6 @@ var bodyParser = require('body-parser')
 var request = require('request')
 var moment = require('moment-timezone')
 var path = require('path')
-var url = require('url')
 
 var app = express()
 var port = process.env.PORT || 3000
@@ -63,29 +62,26 @@ var receivedMessage = (event) => {
     if (messageText) {
         console.log('received message "' + messageText + '" from ' + senderId)
         var match = messageText.toLowerCase()
-        if (match == 'monday' || match == 'tuesday' || match == 'wednesday' || match == 'thursday' || match == 'friday') {
-            sendTextMessage(senderId, 'A regular' + capFirstLetter(match) + 'schedule looks like: \n' + getRegularSchedule(match))
-        } else if (match == 'download') {
-            sendDownloadLinks(senderId)
-        } else if (match == 'map') {
-            console.log(appUrl + 'campusmap.jpg')
-            sendImage(senderId, appUrl + 'campusmap.jpg')
-        } else {
-            sendGenericMessage(senderId)
+        switch (match) {
+            case 'monday':
+            case 'tuesday':
+            case 'wednesday':
+            case 'thursday':
+            case 'frday':
+                sendTextMessage(senderId, 'A regular' + capFirstLetter(match) + 'schedule looks like: \n' + getRegularSchedule(match))
+                break
+            case 'download':
+                sendDownloadLinks(senderId)
+                break
+            case 'map':
+                sendImage(senderId, appUrl + 'campusmap.jpg')
+                break
+            case 'help':
+                sendTextMessage(senderId, 'Thanks for using TheGunnApp Messenger bot!\nTo view the regular bell schedule, simply enter a day (e.g. "Monday")\nUse "Download" to download TheGunnApp for iOS or Android\nTry "Map" to view the (under construction) campus map')
+                break
+            default:
+                sendGenericMessage(senderId)
         }
-        // this is terrible but im too dum to fix
-        // b gone thot
-        /*if (match.includes('monday')) {
-            sendTextMessage(senderId, 'A regular Monday schedule looks like: \n' + getRegularSchedule('Monday'))
-        } else if (match.includes('tuesday')) {
-            sendTextMessage(senderId, 'A regular Tuesday schedule looks like: \n' + getRegularSchedule('Tuesday'))
-        } else if (match.includes('wednesday')) {
-            sendTextMessage(senderId, 'A regular Wednesday schedule looks like: \n' + getRegularSchedule('Wednesday'))
-        } else if (match.includes('thursday')) {
-            sendTextMessage(senderId, 'A regular Thursday schedule looks like: \n' + getRegularSchedule('Thursday'))
-        } else if (match.includes('friday')) {
-            sendTextMessage(senderId, 'A regular Friday schedule looks like: \n' + getRegularSchedule('Friday'))
-        }*/
     }
 }
 
