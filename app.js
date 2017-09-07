@@ -71,6 +71,12 @@ var receivedMessage = (event) => {
             case 'frday':
                 sendTextMessage(senderId, 'A regular ' + capFirstLetter(match) + ' schedule looks like: \n' + getRegularSchedule(match))
                 break
+            case 'today':
+                getSchedule(senderId, moment().format())
+                break
+            case 'tomorrow':
+                getSchedule(senderId, moment().add(1, 'days').format())
+                break
             case 'download':
                 sendDownloadLinks(senderId)
                 break
