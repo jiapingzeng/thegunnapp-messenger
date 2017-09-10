@@ -68,8 +68,8 @@ var receivedMessage = (event) => {
                 getSchedule(senderId, m.format())
             } else {
                 sendTextMessage(senderId, 'That doesn\'t look like a valid date. Please try again.')
-                return
             }
+            return
         }
         var match = messageText.toLowerCase()
         switch (match) {
@@ -248,7 +248,7 @@ var sendHelpMessage = (recipientId) => {
                 type: 'template',
                 payload: {
                     template_type: 'button',
-                    text: text ? text : 'Thanks for trying TheGunnApp Messenger botᵇᵉᵗᵃ! Here are some things you can do:',
+                    text: 'Thanks for trying TheGunnApp Messenger botᵇᵉᵗᵃ! Here are some things you can do:',
                     buttons: [
                         {
                             type: 'postback',
