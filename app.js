@@ -298,18 +298,24 @@ var callCalendarApi = (time, cb) => {
         method: 'GET'
     }, (err, res, data) => {
         if (!err && res.statusCode == 200) {
+            var isRegular = true
             data = JSON.parse(data.trim())
             for (var i = 0; i < data.items.length; i++) {
                 var event = data.items[i]
                 var summary = event.summary.toLowerCase()
                 if (summary && summary.includes('schedule')) {
+                    isRegular = true
                     cb && cb('Seems like there is an alternate schedule! Here it is: \n' + event.description)
                 } else if (summary && (summary.includes('holiday') ||
-                    summary.includes('break') ||
-                    summary.includes('no school') ||
-                    summary.includes('no students'))) {
+                        summary.includes('break') ||
+                        summary.includes('no school') ||
+                        summary.includes('no students'))) {
+                    isRegular = true
                     cb && cb('There\'s no school! Enjoy your day off!')
                 }
+            }
+            if (isRegular) {
+                cb && cb()
             }
         }
     })
