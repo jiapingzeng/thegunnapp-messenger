@@ -65,7 +65,7 @@ var receivedMessage = (event) => {
         if (matchDateStr(messageText)) {
             var m = moment(messageText, 'MM/DD/YYYY')
             if (m.isValid()) {
-                getSchedule(senderId, m.format())
+                getSchedule(senderId, moment.tz(m.format(), 'America/Los_Angeles').format())
             } else {
                 sendTextMessage(senderId, 'That doesn\'t look like a valid date. Please try again.')
             }
@@ -304,13 +304,13 @@ var callCalendarApi = (time, cb) => {
                 var event = data.items[i]
                 var summary = event.summary.toLowerCase()
                 if (summary && summary.includes('schedule')) {
-                    isRegular = true
+                    isRegular = false
                     cb && cb('Seems like there is an alternate schedule! Here it is: \n' + event.description)
                 } else if (summary && (summary.includes('holiday') ||
                         summary.includes('break') ||
                         summary.includes('no school') ||
                         summary.includes('no students'))) {
-                    isRegular = true
+                    isRegular = false
                     cb && cb('There\'s no school! Enjoy your day off!')
                 }
             }
