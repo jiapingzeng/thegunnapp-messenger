@@ -62,6 +62,15 @@ var receivedMessage = (event) => {
     var messageAttachments = message.attachments
     if (messageText) {
         console.log('received message "' + messageText + '" from ' + senderId)
+        if (matchDateStr(messageText)) {
+            var m = moment(messageText, 'MM/DD/YYYY')
+            if (m.isValid()) {
+                getSchedule(senderId, m.format())
+            } else {
+                sendTextMessage(senderId, 'That doesn\'t look like a valid date. Please try again.')
+                return
+            }
+        }
         var match = messageText.toLowerCase()
         switch (match) {
             case 'monday':
@@ -69,7 +78,7 @@ var receivedMessage = (event) => {
             case 'wednesday':
             case 'thursday':
             case 'frday':
-                sendTextMessage(senderId, 'A regular ' + capFirstLetter(match) + ' schedule looks like: \n' + getRegularSchedule(match))
+                sendTextMessage(senderId, 'A regular ' + capFirstChar(match) + ' schedule looks like: \n' + getRegularSchedule(match))
                 break
             case 'today':
                 getSchedule(senderId, moment().format())
@@ -84,7 +93,7 @@ var receivedMessage = (event) => {
                 sendImage(senderId, appUrl + 'campusmap.jpg')
                 break
             case 'help':
-                sendHelpText(senderId)
+                sendHelpMessage(senderId)
                 break
             default:
                 sendGenericMessage(senderId)
@@ -108,7 +117,19 @@ var receivedPayload = (event) => {
             sendDownloadLinks(senderId)
             break
         case 'START':
-            sendHelpText(senderId)
+            sendTextMessage(senderId, 'Welcome! Text "Today" to see today\'s bell schedule, or text "Help" to see (some of) all available options')
+            break
+        case 'HELP':
+            sendHelpMessage(senderId)
+            break
+        case 'HELP_GET_SCHEDULE':
+            sendTextMessage(senderId, 'Text "Today", "Tomorrow", or a specific date (in MM/DD/YYYY format) to see the day\'s schedule')
+            break
+        case 'HELP_DOWNLOAD_APP':
+            sendTextMessage(senderId, 'Use "Download" to download TheGunnApp for iOS or Android')
+            break
+        case 'HELP_VIEW_MAP':
+            sendTextMessage(senderId, 'Type "Map" to view the campus map (more map features are in the works!)')
             break
     }
 }
@@ -132,7 +153,7 @@ var getSchedule = (senderId, time) => {
 }
 
 var getRegularSchedule = (day) => {
-    return regularSchedule[capFirstLetter(day)]
+    return regularSchedule[capFirstChar(day)]
 }
 
 var sendTextMessage = (recipientId, messageText) => {
@@ -164,8 +185,8 @@ var sendGenericMessage = (recipientId, text) => {
                             payload: 'SCHEDULE_TOMORROW'
                         }, {
                             type: 'postback',
-                            title: 'Download TheGunnApp',
-                            payload: 'DOWNLOAD'
+                            title: 'More options',
+                            payload: 'HELP'
                         }
                     ]
                 }
@@ -219,13 +240,36 @@ var sendImage = (recipientId, image) => {
     callSendApi(messageData)
 }
 
-var sendHelpText = (recipientId) => {
-    var helpMessage = 'Thanks for using TheGunnApp Messenger bot!\n\n' +
-        'Text "Today" or "Tomorrow" to see the bell schedule for the day (shows alternate schedules too!)\n\n' +
-        'To view the regular bell schedule, simply enter a day (e.g. "Monday")\n\n' +
-        'Use "Download" to download TheGunnApp for iOS or Android\n\n' +
-        'Try "Map" to view the (under construction) campus map'
-    sendTextMessage(recipientId, helpMessage)
+var sendHelpMessage = (recipientId) => {
+    var messageData = {
+        recipient: { id: recipientId },
+        message: {
+            attachment: {
+                type: 'template',
+                payload: {
+                    template_type: 'button',
+                    text: text ? text : 'Thanks for trying TheGunnApp Messenger botᵇᵉᵗᵃ! Here are some things you can do:',
+                    buttons: [
+                        {
+                            type: 'postback',
+                            title: 'Get schedule',
+                            payload: 'HELP_GET_SCHEDULE'
+                        }, {
+                            type: 'postback',
+                            title: 'Download app',
+                            payload: 'HELP_DOWNLOAD_APP'
+                        }, {
+                            type: 'postback',
+                            title: 'View campus map',
+                            payload: 'HELP_VIEW_MAP'
+                        }
+                    ]
+                }
+            }
+        }
+    }
+    console.log(messageData)
+    callSendApi(messageData)
 }
 
 var callSendApi = (messageData) => {
@@ -271,6 +315,12 @@ var callCalendarApi = (time, cb) => {
     })
 }
 
-var capFirstLetter = (s) => {
+var capFirstChar = (s) => {
     return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()
+}
+
+var matchDateStr = (s) => {
+    // MM/DD/YYYY
+    var regex = /(0?[1-9]|1[0-2])[\/](0?[1-9]|[12][0-9]|3[01])[\/]20\d{2}/
+    return regex.test(s)
 }
