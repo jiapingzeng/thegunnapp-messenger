@@ -78,7 +78,7 @@ var receivedMessage = (event) => {
         if (matchDateStr(messageText)) {
             var m = moment.utc(messageText, 'MM/DD/YYYY')
             if (m.isValid()) {
-                getSchedule(senderId, m.format())
+                getSchedule(senderId, m.add(1, 'day').format())
             } else {
                 sendTextMessage(senderId, 'That doesn\'t look like a valid date. Please try again.')
             }
