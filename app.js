@@ -12,21 +12,34 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
+
+// Load environment variables
+// URL of host
 var appUrl = process.env.APP_URL ? process.env.APP_URL : config.get('appUrl')
+// Messenger app secret
 var appSecret = process.env.MESSENGER_APP_SECRET ? process.env.MESSENGER_APP_SECRET : config.get('appSecret')
+// Messenger validation token
 var validationToken = process.env.MESSENGER_VALIDATION_TOKEN ? (process.env.MESSENGER_VALIDATION_TOKEN) : config.get('validationToken')
+// Messenger page access token
 var pageAccessToken = process.env.MESSENGER_PAGE_ACCESS_TOKEN ? (process.env.MESSENGER_PAGE_ACCESS_TOKEN) : config.get('pageAccessToken')
+// Messenger API URL
 var messengerUrl = process.env.MESSENGER_API_URL ? process.env.MESSENGER_API_URL : config.get('messengerUrl')
+// Google API Key
 var googleApiKey = process.env.GOOGLE_API_KEY ? process.env.GOOGLE_API_KEY : config.get('googleApiKey')
+// Gunn events calendar ID
 var calendarId = process.env.GOOGLE_CALENDAR_ID ? process.env.GOOGLE_CALENDAR_ID : config.get('calendarId')
+// Google Calendar API URL
 var calendarUrl = process.env.GOOGLE_CALENDAR_API_URL ? process.env.GOOGLE_CALENDAR_API_URL : config.get('calendarUrl')
+
+// Load regular schedule fron schedule.json
+var regularSchedule = require('./schedule')
+
 
 console.log('server started')
 
-var regularSchedule = require('./schedule')
 
 app.get('/', (req, res) => {
-    res.redirect('https://www.facebook.com/TheGunnApp-510499992673080/')
+    res.redirect('https://www.facebook.com/thegunnapp')
 })
 
 app.get('/webhook', (req, res) => {
@@ -63,9 +76,9 @@ var receivedMessage = (event) => {
     if (messageText) {
         console.log('received message "' + messageText + '" from ' + senderId)
         if (matchDateStr(messageText)) {
-            var m = moment(messageText, 'MM/DD/YYYY')
+            var m = moment.utc(messageText, 'MM/DD/YYYY')
             if (m.isValid()) {
-                getSchedule(senderId, moment.tz(m.format(), 'America/Los_Angeles').format())
+                getSchedule(senderId, m.format())
             } else {
                 sendTextMessage(senderId, 'That doesn\'t look like a valid date. Please try again.')
             }
@@ -321,12 +334,13 @@ var callCalendarApi = (time, cb) => {
     })
 }
 
+// Capitalize the first character of a string
 var capFirstChar = (s) => {
     return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()
 }
 
-var matchDateStr = (s) => {
-    // MM/DD/YYYY
+// Match any string containing MM/DD/YYYY
+var matchDateStr = (s) => {    
     var regex = /(0?[1-9]|1[0-2])[\/](0?[1-9]|[12][0-9]|3[01])[\/]20\d{2}/
     return regex.test(s)
 }
