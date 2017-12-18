@@ -316,9 +316,10 @@ var callCalendarApi = (time, cb) => {
             for (var i = 0; i < data.items.length; i++) {
                 var event = data.items[i]
                 var summary = event.summary.toLowerCase()
-                if (summary && summary.includes('schedule')) {
+                var description = event.description
+                if (summary && summary.includes('schedule') && description) {
                     isRegular = false
-                    cb && cb('Seems like there is an alternate schedule! Here it is: \n' + event.description)
+                    cb && cb('Seems like there is an alternate schedule! Here it is: \n' + description)
                 } else if (summary && (summary.includes('holiday') ||
                         summary.includes('break') ||
                         summary.includes('no school') ||
