@@ -319,7 +319,7 @@ var callCalendarApi = (time, cb) => {
                 var description = event.description
                 if (summary && summary.includes('schedule') && description) {
                     isRegular = false
-                    cb && cb('Seems like there is an alternate schedule! Here it is: \n' + description)
+                    cb && cb('Seems like there is an alternate schedule! Here it is: \n' + description.replace(/<\/?[^>]+(>|$)/g, ""))
                 } else if (summary && (summary.includes('holiday') ||
                         summary.includes('break') ||
                         summary.includes('no school') ||
